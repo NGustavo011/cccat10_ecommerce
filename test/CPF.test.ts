@@ -1,4 +1,4 @@
-import CPF from "../src/classes/CPF"
+import CPF from "../src/class/CPF"
 
 let cpf: CPF;
 

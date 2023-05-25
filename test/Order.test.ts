@@ -1,7 +1,7 @@
-import CPF from "../src/classes/CPF";
-import Cart from "../src/classes/Cart";
-import Order from "../src/classes/Order";
-import Product from "../src/classes/Product"
+import CPF from "../src/class/CPF";
+import Cart from "../src/class/Cart";
+import Order from "../src/class/Order";
+import Product from "../src/class/Product"
 
 test("Deve criar um pedido com 3 produtos (com descrição, preço e quantidade) e calcular o valor total corretamente", function(){
     const product1 = new Product("Legend of zelda BOTW", 300);
