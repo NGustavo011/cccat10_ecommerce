@@ -2,7 +2,8 @@ import axios from "axios"
 
 test("Não deve aceitar um pedido com cpf inválido", async function(){
     const input = {
-        cpf: "123.456.789-12"
+        cpf: "123.456.789-12",
+        items: []
     }
     const response = await axios.post("http://localhost:3000/checkout", input);
     const output = response.data;
@@ -12,7 +13,8 @@ test("Não deve aceitar um pedido com cpf inválido", async function(){
 
 test("Deve criar um pedido vazio", async function(){
     const input = {
-        cpf: "407.302.170-27"
+        cpf: "407.302.170-27",
+        items: []
     }
     const response = await axios.post("http://localhost:3000/checkout", input);
     const output = response.data;

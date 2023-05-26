@@ -3,17 +3,20 @@ import CouponRepositoryDatabase from './CouponRepositoryDatabase';
 import CurrencyGateway from './CurrencyGateway';
 import CurrencyGatewayHttp from './CurrencyGatewayHttp';
 import FreightCalculator from './FreightCalculator';
+import OrderRepository from './OrderRepository';
+import OrderRepositoryDatabase from './OrderRepositoryDatabase';
 import ProductRepository from './ProductRepository';
 import ProductRepositoryDatabase from './ProductRepositoryDatabase';
 import CPF from './class/CPF';
 
 export default class Checkout{
 
-    constructor (readonly currencyGateway: CurrencyGateway = new CurrencyGatewayHttp(), 
-    readonly productRepository: ProductRepository = new ProductRepositoryDatabase(),
-    readonly couponRepository: CouponRepository = new CouponRepositoryDatabase()){
-
-    }
+    constructor (
+        readonly currencyGateway: CurrencyGateway = new CurrencyGatewayHttp(), 
+        readonly productRepository: ProductRepository = new ProductRepositoryDatabase(),
+        readonly couponRepository: CouponRepository = new CouponRepositoryDatabase(),
+        readonly orderRepository: OrderRepository = new OrderRepositoryDatabase()
+    ){}
 
     async execute(input: Input): Promise<Output>{
         const output: Output = {
@@ -36,8 +39,12 @@ export default class Checkout{
                 } else {
                     output.total += parseFloat(productData.price) * item.quantity;
                 }
-                const itemFreight = FreightCalculator.calculate(productData);
+                //const itemFreight = FreightCalculator.calculate(productData);
+                const volume = productData.width/100 * productData.height/100 * productData.length/100;
+                const density = parseFloat(productData.weight)/volume;
+                const itemFreight = 1000*volume*(density/100);
                 output.freight += Math.max(itemFreight, 10) * item.quantity;
+                item.price = parseFloat(productData.price);
                 items.push(item.idProduct);
             }
         }
@@ -50,16 +57,30 @@ export default class Checkout{
         }
         new CPF(input.cpf);
         if(input.from && input.to)
-            output.total += output.freight
+            output.total += output.freight;
+        const year = new Date().getFullYear();
+        const sequence = await this.orderRepository.count();
+        const code = `${year}${sequence.toString().padStart(8, "0")}`;
+        const order = {
+            idOrder: input.uuid,
+            total: output.total,
+            code,
+            freight: output.freight,
+            cpf: input.cpf,
+            items: input.items
+        }
+        await this.orderRepository.save(order);
         return output
     }
 }
 
 type Input = {
+    uuid?: string,
     cpf: string,
     items: {
         idProduct: number,
-        quantity: number
+        quantity: number,
+        price?: number,
     }[],
     coupon?: string,
     from?: string,
