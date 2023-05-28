@@ -7,7 +7,7 @@ import OrderRepository from './OrderRepository';
 import OrderRepositoryDatabase from './OrderRepositoryDatabase';
 import ProductRepository from './ProductRepository';
 import ProductRepositoryDatabase from './ProductRepositoryDatabase';
-import CPF from './class/CPF';
+import CPF from './CPF';
 
 export default class Checkout{
 

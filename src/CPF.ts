@@ -1,9 +1,9 @@
 export default class CPF{
     private _cpf: string;
 
-    constructor(cpf: string){
-        this._cpf = cpf
-        this.cpfIsValid()
+    constructor(readonly cpf: string){
+        this._cpf = cpf;
+        this.cpfIsValid();
     }
 
     private cpfIsNullOrUndefined(){

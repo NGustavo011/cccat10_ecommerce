@@ -1,5 +1,4 @@
-import CPF from "../src/class/CPF"
-
+import CPF from "../src/CPF";
 let cpf: CPF;
 
 beforeEach(function(){

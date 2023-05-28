@@ -1,14 +1,3 @@
-import Checkout from "../src/Checkout";
-import sinon from 'sinon';
-import CurrencyGatewayHttp from "../src/CurrencyGatewayHttp";
-import ProductRepositoryDatabase from "../src/ProductRepositoryDatabase";
-import CouponRepositoryDatabase from "../src/CouponRepositoryDatabase";
-import CurrencyGateway from "../src/CurrencyGateway";
-import ProductRepository from "../src/ProductRepository";
-import crypto from 'crypto';
-import GetOrder from "../src/GetOrder";
-import OrderRepositoryDatabase from "../src/OrderRepositoryDatabase";
-import FreightCalculator from "../src/FreightCalculator";
 import SimulateFreight from "../src/SimulateFreight";
 
 let simulateFreight: SimulateFreight;
