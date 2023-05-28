@@ -1,5 +1,6 @@
-import ProductRepository from './ProductRepository';
-import ProductRepositoryDatabase from './ProductRepositoryDatabase';
+import FreightCalculator from '../../domain/entity/FreightCalculator';
+import ProductRepository from '../../ProductRepository';
+import ProductRepositoryDatabase from '../../ProductRepositoryDatabase';
 
 export default class SimulateFreight{
 
@@ -13,13 +14,10 @@ export default class SimulateFreight{
         };
         if (input.items){
             for(const item of input.items){
-                const productData = await this.productRepository.getProduct(item.idProduct);
-                if(productData.width <= 0 || productData.height <= 0 || productData.length <= 0 || parseFloat(productData.weight) <= 0)
+                const product = await this.productRepository.getProduct(item.idProduct);
+                if(product.width <= 0 || product.height <= 0 || product.length <= 0 || product.weight <= 0)
                     throw new Error("Invalid dimension");
-                //const itemFreight = FreightCalculator.calculate(productData);
-                const volume = productData.width/100 * productData.height/100 * productData.length/100;
-                const density = parseFloat(productData.weight)/volume;
-                const itemFreight = 1000*volume*(density/100);
+                const itemFreight = FreightCalculator.calculate(product);
                 output.freight += Math.max(itemFreight, 10) * item.quantity;
             }
         }

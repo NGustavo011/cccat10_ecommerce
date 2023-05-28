@@ -1,8 +1,8 @@
-import CPF from "../src/CPF";
-import Order from "../src/Order";
+import CPF from "../src/domain/entity/CPF";
+import Order from "../src/domain/entity/Order";
 import crypto from "crypto";
-import Product from "../src/Product";
-import CurrencyTable from "../src/CurrencyTable";
+import Product from "../src/domain/entity/Product";
+import CurrencyTable from "../src/domain/entity/CurrencyTable";
 
 test ("Não deve criar um pedido com CPF inválido", function(){
     const uuid = crypto.randomUUID();

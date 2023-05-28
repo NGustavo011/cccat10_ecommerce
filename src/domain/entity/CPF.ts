@@ -1,7 +1,7 @@
 export default class CPF{
     private _cpf: string;
 
-    constructor(readonly cpf: string){
+    constructor(cpf: string){
         this._cpf = cpf;
         this.cpfIsValid();
     }
@@ -36,7 +36,8 @@ export default class CPF{
     }
 
     private cpfIsValid() {
-        if (this.cpfIsNullOrUndefined() || !this.cpfLenghtIsValid()) throw new Error("Invalid CPF")
+        if (this.cpfIsNullOrUndefined() || !this.cpfLenghtIsValid()) 
+            throw new Error("Invalid CPF");
         this.clean();
         if(this.cpfAllDigitsTheSame()) throw new Error("Invalid CPF")
         const digit1 = this.calculateDigit(10);
@@ -44,5 +45,9 @@ export default class CPF{
         let actualDigit = this.extractCheckDigit();
         const calculatedDigit = `${digit1}${digit2}`;
         if(actualDigit != calculatedDigit) throw new Error("Invalid CPF")
+    }
+
+    getCpfValue() {
+        return this._cpf;
     }
 }

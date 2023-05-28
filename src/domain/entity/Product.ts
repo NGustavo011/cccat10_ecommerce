@@ -3,4 +3,8 @@ export default class Product {
         if(this.width <= 0 || this.height <= 0 || this.length <= 0 || this.weight <= 0)
             throw new Error("Invalid dimension");
     }
+    
+    getVolume(){
+        return this.width/100 * this.height/100 * this.length/100;
+    }
 }
