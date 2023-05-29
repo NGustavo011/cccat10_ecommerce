@@ -1,14 +1,6 @@
 import Order from "../src/entities/Order";
 import Product from "../src/entities/Product";
 
-function sleep(time: number){
-    return new Promise((resolve)=>{
-        setTimeout(()=>{
-            resolve(true);
-        }, time);
-    })
-}
-
 test("Deve criar um pedido", async function(){
     const cpf = "407.302.170-27";
     const order = new Order(cpf);
