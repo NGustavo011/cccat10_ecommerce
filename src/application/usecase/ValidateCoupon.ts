@@ -1,5 +1,5 @@
-import CouponRepository from '../../CouponRepository';
-import CouponRepositoryDatabase from '../../CouponRepositoryDatabase';
+import CouponRepository from '../repository/CouponRepository';
+import CouponRepositoryDatabase from '../../infra/repository/CouponRepositoryDatabase';
 
 export default class ValidateCoupon{
 

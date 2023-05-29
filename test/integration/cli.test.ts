@@ -1,15 +1,17 @@
-import CLIController from "../src/CLIController";
-import CLIHandler from "../src/CLIHandler";
-import CouponRepositoryDatabase from "../src/CouponRepositoryDatabase";
-import CurrencyGatewayHttp from "../src/CurrencyGatewayHttp";
-import OrderRepositoryDatabase from "../src/OrderRepositoryDatabase";
-import PgPromise from "../src/PgPromiserAdapter";
-import ProductRepositoryDatabase from "../src/ProductRepositoryDatabase";
-import Checkout from "../src/application/usecase/Checkout";
+import AxiosAdapater from "../../src/infra/http/AxiosAdapter";
+import CLIController from "../../src/infra/cli/CLIController";
+import CLIHandler from "../../src/infra/cli/CLIHandler";
+import CouponRepositoryDatabase from "../../src/infra/repository/CouponRepositoryDatabase";
+import CurrencyGatewayHttp from "../../src/infra/gateway/CurrencyGatewayHttp";
+import OrderRepositoryDatabase from "../../src/infra/repository/OrderRepositoryDatabase";
+import PgPromise from "../../src/infra/database/PgPromiserAdapter";
+import ProductRepositoryDatabase from "../../src/infra/repository/ProductRepositoryDatabase";
+import Checkout from "../../src/application/usecase/Checkout";
 
 test("Deve testar o cli", async function(){
     const connection = new PgPromise();
-    const currencyGateway = new CurrencyGatewayHttp();
+    const httpClient = new AxiosAdapater();
+    const currencyGateway = new CurrencyGatewayHttp(httpClient);
     const productRepository = new ProductRepositoryDatabase(connection);
     const couponRepository = new CouponRepositoryDatabase(connection);
     const orderRepository = new OrderRepositoryDatabase(connection);

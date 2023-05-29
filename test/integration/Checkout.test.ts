@@ -1,18 +1,19 @@
-import Checkout from "../src/application/usecase/Checkout";
+import Checkout from "../../src/application/usecase/Checkout";
 import sinon from 'sinon';
-import CurrencyGatewayHttp from "../src/CurrencyGatewayHttp";
-import ProductRepositoryDatabase from "../src/ProductRepositoryDatabase";
-import CouponRepositoryDatabase from "../src/CouponRepositoryDatabase";
-import CurrencyGateway from "../src/CurrencyGateway";
-import ProductRepository from "../src/ProductRepository";
+import CurrencyGatewayHttp from "../../src/infra/gateway/CurrencyGatewayHttp";
+import ProductRepositoryDatabase from "../../src/infra/repository/ProductRepositoryDatabase";
+import CouponRepositoryDatabase from "../../src/infra/repository/CouponRepositoryDatabase";
+import CurrencyGateway from "../../src/application/gateway/CurrencyGateway";
+import ProductRepository from "../../src/application/repository/ProductRepository";
 import crypto from 'crypto';
-import GetOrder from "../src/application/usecase/GetOrder";
-import OrderRepositoryDatabase from "../src/OrderRepositoryDatabase";
-import Product from "../src/domain/entity/Product";
-import PgPromise from "../src/PgPromiserAdapter";
-import Connection from "../src/Connection";
-import CouponRepository from "../src/CouponRepository";
-import OrderRepository from "../src/OrderRepository";
+import GetOrder from "../../src/application/usecase/GetOrder";
+import OrderRepositoryDatabase from "../../src/infra/repository/OrderRepositoryDatabase";
+import Product from "../../src/domain/entity/Product";
+import PgPromise from "../../src/infra/database/PgPromiserAdapter";
+import Connection from "../../src/infra/database/Connection";
+import CouponRepository from "../../src/application/repository/CouponRepository";
+import OrderRepository from "../../src/application/repository/OrderRepository";
+import AxiosAdapater from "../../src/infra/http/AxiosAdapter";
 
 let checkout: Checkout;
 let getOrder: GetOrder;
@@ -22,7 +23,8 @@ let orderRepository: OrderRepository;
 
 beforeEach(function(){
     connection = new PgPromise();
-    const currencyGateway = new CurrencyGatewayHttp();
+    const httpClient = new AxiosAdapater();
+    const currencyGateway = new CurrencyGatewayHttp(httpClient);
     const productRepository = new ProductRepositoryDatabase(connection);
     couponRepository = new CouponRepositoryDatabase(connection);
     orderRepository = new OrderRepositoryDatabase(connection);

@@ -1,9 +1,9 @@
-import CouponRepository from '../../CouponRepository';
-import CurrencyGateway from '../../CurrencyGateway';
-import CurrencyGatewayHttp from '../../CurrencyGatewayHttp';
+import CouponRepository from '../repository/CouponRepository';
+import CurrencyGateway from '../gateway/CurrencyGateway';
+import CurrencyGatewayHttp from '../../infra/gateway/CurrencyGatewayHttp';
 import FreightCalculator from '../../domain/entity/FreightCalculator';
-import OrderRepository from '../../OrderRepository';
-import ProductRepository from '../../ProductRepository';
+import OrderRepository from '../repository/OrderRepository';
+import ProductRepository from '../repository/ProductRepository';
 
 import CurrencyTable from '../../domain/entity/CurrencyTable';
 import Order from '../../domain/entity/Order';
@@ -11,7 +11,7 @@ import Order from '../../domain/entity/Order';
 export default class Checkout{
 
     constructor (
-        readonly currencyGateway: CurrencyGateway = new CurrencyGatewayHttp(), 
+        readonly currencyGateway: CurrencyGateway, 
         readonly productRepository: ProductRepository,
         readonly couponRepository: CouponRepository,
         readonly orderRepository: OrderRepository

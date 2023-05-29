@@ -1,5 +1,5 @@
-import OrderRepository from '../../OrderRepository';
-import OrderRepositoryDatabase from '../../OrderRepositoryDatabase';
+import OrderRepository from '../repository/OrderRepository';
+import OrderRepositoryDatabase from '../../infra/repository/OrderRepositoryDatabase';
 
 export default class GetOrder{
 

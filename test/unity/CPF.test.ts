@@ -1,4 +1,4 @@
-import CPF from "../src/domain/entity/CPF";
+import CPF from "../../src/domain/entity/CPF";
 let cpf: CPF;
 
 beforeEach(function(){

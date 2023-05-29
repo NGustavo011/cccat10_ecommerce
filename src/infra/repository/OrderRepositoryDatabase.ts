@@ -1,7 +1,7 @@
-import Connection from "./Connection";
-import Item from "./domain/entity/Item";
-import Order from "./domain/entity/Order";
-import OrderRepository from "./OrderRepository";
+import Connection from "../database/Connection";
+import Item from "../../domain/entity/Item";
+import Order from "../../domain/entity/Order";
+import OrderRepository from "../../application/repository/OrderRepository";
 
 export default class OrderRepositoryDatabase implements OrderRepository {
     constructor(readonly connection: Connection){}
