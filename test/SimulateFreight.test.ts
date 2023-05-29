@@ -1,9 +1,21 @@
+import Connection from "../src/Connection";
+import PgPromise from "../src/PgPromiserAdapter";
+import ProductRepository from "../src/ProductRepository";
+import ProductRepositoryDatabase from "../src/ProductRepositoryDatabase";
 import SimulateFreight from "../src/application/usecase/SimulateFreight";
 
 let simulateFreight: SimulateFreight;
+let connection: Connection;
+let productRepository: ProductRepository;
 
 beforeEach(function(){
-    simulateFreight = new SimulateFreight();
+    connection = new PgPromise();
+    productRepository = new ProductRepositoryDatabase(connection);
+    simulateFreight = new SimulateFreight(productRepository);
+})
+
+afterEach(async function(){
+    await connection.close();
 })
 
 test("Deve calcular o frete para um pedido com 3 itens", async function(){

@@ -4,7 +4,7 @@ import OrderRepositoryDatabase from '../../OrderRepositoryDatabase';
 export default class GetOrder{
 
     constructor (
-        readonly orderRepository: OrderRepository = new OrderRepositoryDatabase()
+        readonly orderRepository: OrderRepository
     ){}
 
     async execute(id: string): Promise<Output>{

@@ -1,3 +1,8 @@
+import CouponRepositoryDatabase from './CouponRepositoryDatabase';
+import CurrencyGatewayHttp from './CurrencyGatewayHttp';
+import OrderRepositoryDatabase from './OrderRepositoryDatabase';
+import PgPromise from './PgPromiserAdapter';
+import ProductRepositoryDatabase from './ProductRepositoryDatabase';
 import Checkout from './application/usecase/Checkout';
 
 const input: Input = {cpf: "", items: []};
@@ -12,7 +17,12 @@ process.stdin.on("data", async function(chunk){
     }
     if(command.startsWith("checkout")){
         try{
-           const checkout = new Checkout();
+            const connection = new PgPromise();
+            const currencyGateway = new CurrencyGatewayHttp();
+            const productRepository = new ProductRepositoryDatabase(connection);
+            const couponRepository = new CouponRepositoryDatabase(connection);
+            const orderRepository = new OrderRepositoryDatabase(connection);
+            const checkout = new Checkout(currencyGateway, productRepository, couponRepository, orderRepository);
            const output = await checkout.execute(input)
            console.log(output)
         } catch(error){

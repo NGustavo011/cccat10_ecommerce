@@ -1,12 +1,9 @@
 import CouponRepository from '../../CouponRepository';
-import CouponRepositoryDatabase from '../../CouponRepositoryDatabase';
 import CurrencyGateway from '../../CurrencyGateway';
 import CurrencyGatewayHttp from '../../CurrencyGatewayHttp';
 import FreightCalculator from '../../domain/entity/FreightCalculator';
 import OrderRepository from '../../OrderRepository';
-import OrderRepositoryDatabase from '../../OrderRepositoryDatabase';
 import ProductRepository from '../../ProductRepository';
-import ProductRepositoryDatabase from '../../ProductRepositoryDatabase';
 
 import CurrencyTable from '../../domain/entity/CurrencyTable';
 import Order from '../../domain/entity/Order';
@@ -15,9 +12,9 @@ export default class Checkout{
 
     constructor (
         readonly currencyGateway: CurrencyGateway = new CurrencyGatewayHttp(), 
-        readonly productRepository: ProductRepository = new ProductRepositoryDatabase(),
-        readonly couponRepository: CouponRepository = new CouponRepositoryDatabase(),
-        readonly orderRepository: OrderRepository = new OrderRepositoryDatabase()
+        readonly productRepository: ProductRepository,
+        readonly couponRepository: CouponRepository,
+        readonly orderRepository: OrderRepository
     ){}
 
     async execute(input: Input): Promise<Output>{
@@ -31,8 +28,7 @@ export default class Checkout{
             for(const item of input.items){
                 const product = await this.productRepository.getProduct(item.idProduct);
                 order.addItem(product, item.quantity);
-                const itemFreight = FreightCalculator.calculate(product);
-                freight += Math.max(itemFreight, 10) * item.quantity;
+                freight += FreightCalculator.calculate(product, item.quantity);
             }
         }
         if(input.from && input.to)

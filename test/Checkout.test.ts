@@ -9,13 +9,29 @@ import crypto from 'crypto';
 import GetOrder from "../src/application/usecase/GetOrder";
 import OrderRepositoryDatabase from "../src/OrderRepositoryDatabase";
 import Product from "../src/domain/entity/Product";
+import PgPromise from "../src/PgPromiserAdapter";
+import Connection from "../src/Connection";
+import CouponRepository from "../src/CouponRepository";
+import OrderRepository from "../src/OrderRepository";
 
 let checkout: Checkout;
 let getOrder: GetOrder;
+let connection: Connection;
+let couponRepository: CouponRepository;
+let orderRepository: OrderRepository;
 
 beforeEach(function(){
-    checkout = new Checkout();
-    getOrder = new GetOrder();
+    connection = new PgPromise();
+    const currencyGateway = new CurrencyGatewayHttp();
+    const productRepository = new ProductRepositoryDatabase(connection);
+    couponRepository = new CouponRepositoryDatabase(connection);
+    orderRepository = new OrderRepositoryDatabase(connection);
+    checkout = new Checkout(currencyGateway, productRepository, couponRepository, orderRepository);
+    getOrder = new GetOrder(orderRepository);
+});
+
+afterEach(async function () {
+    await connection.close();
 })
 
 test("Não deve aceitar um pedido com cpf inválido", async function(){
@@ -23,7 +39,7 @@ test("Não deve aceitar um pedido com cpf inválido", async function(){
         cpf: "123.456.789-12",
         items: []
     }
-    expect(() => checkout.execute(input)).rejects.toThrow(new Error("Invalid CPF"));
+    await expect(() => checkout.execute(input)).rejects.toThrow(new Error("Invalid CPF"));
 });
 
 test("Deve criar um pedido vazio", async function(){
@@ -83,7 +99,7 @@ test("Não deve criar um pedido com quantidade negativa em um dos produtos", asy
             { idProduct: 1, quantity: -1 },
         ]
     }
-    expect(()=>checkout.execute(input)).rejects.toThrow("Invalid quantity");
+    await expect(()=>checkout.execute(input)).rejects.toThrow("Invalid quantity");
 });
 
 test("Não deve criar um pedido com item duplicado", async function(){
@@ -94,7 +110,7 @@ test("Não deve criar um pedido com item duplicado", async function(){
             { idProduct: 1, quantity: 1 },
         ]
     }
-    expect(()=> checkout.execute(input)).rejects.toThrow("Duplicated item");
+    await expect(()=> checkout.execute(input)).rejects.toThrow("Duplicated item");
 });
 
 test("Deve criar um pedido com 1 produto calculando o frete", async function(){
@@ -118,7 +134,7 @@ test("Não deve criar um pedido se o produto possuir alguma dimensão negativa",
             { idProduct: 4, quantity: 1 },
         ]
     }
-    expect(()=>checkout.execute(input)).rejects.toThrow("Invalid dimension");
+    await expect(()=>checkout.execute(input)).rejects.toThrow("Invalid dimension");
 });
 
 test("Deve criar um pedido com 1 produto calculando o frete com o valor mínimo", async function(){
@@ -203,7 +219,7 @@ test("Deve criar um pedido com 1 produto em dólar usando fake", async function(
             return new Product(1, "A", 1000, 10, 10, 10, 10, "USD");
         }
     }
-    checkout = new Checkout(currencyGateway, productRepository);
+    checkout = new Checkout(currencyGateway, productRepository, couponRepository, orderRepository);
     const input = {
         cpf: "407.302.170-27",
         items: [
