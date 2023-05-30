@@ -1,12 +1,16 @@
 import CouponRepository from '../repository/CouponRepository';
 import CurrencyGateway from '../gateway/CurrencyGateway';
 import CurrencyGatewayHttp from '../../infra/gateway/CurrencyGatewayHttp';
-import FreightCalculator from '../../domain/entity/FreightCalculator';
 import OrderRepository from '../repository/OrderRepository';
 import ProductRepository from '../repository/ProductRepository';
 
 import CurrencyTable from '../../domain/entity/CurrencyTable';
 import Order from '../../domain/entity/Order';
+import FreightGateway, {Input as FreightInput} from '../gateway/FreightGateway';
+import FreightGatewayHttp from '../../infra/gateway/FreightGatewayHttp';
+import AxiosAdapater from '../../infra/http/AxiosAdapter';
+import CatalogGateway from '../gateway/CatalogGateway';
+import CatalogGatewayHttp from '../../infra/gateway/CatalogGatewayHttp';
 
 export default class Checkout{
 
@@ -14,23 +18,28 @@ export default class Checkout{
         readonly currencyGateway: CurrencyGateway, 
         readonly productRepository: ProductRepository,
         readonly couponRepository: CouponRepository,
-        readonly orderRepository: OrderRepository
+        readonly orderRepository: OrderRepository,
+        readonly freightGateway: FreightGateway = new FreightGatewayHttp(new AxiosAdapater()),
+        readonly catalogGateway: CatalogGateway = new CatalogGatewayHttp(new AxiosAdapater())
     ){}
 
     async execute(input: Input): Promise<Output>{
-        let freight = 0;
         const currencies = await this.currencyGateway.getCurrencies(); 
         const currencyTable = new CurrencyTable();
         currencyTable.addCurrency("USD", currencies.usd);
         const sequence = await this.orderRepository.count();
         const order = new Order(input.uuid, input.cpf, currencyTable, sequence, new Date());
+        const freightInput: FreightInput = { items: []};
         if (input.items){
             for(const item of input.items){
-                const product = await this.productRepository.getProduct(item.idProduct);
+                // const product = await this.productRepository.getProduct(item.idProduct);
+                const product = await this.catalogGateway.getProduct(item.idProduct);
                 order.addItem(product, item.quantity);
-                freight += FreightCalculator.calculate(product, item.quantity);
+                freightInput.items.push({ width: product.width, height: product.height, length: product.length, weight: product.weight, quantity: item.quantity});
             }
         }
+        const freightOutput = await this.freightGateway.calculateFreight(freightInput);
+        const freight = freightOutput.freight;
         if(input.from && input.to)
             order.freight = freight;
         if(input.coupon){

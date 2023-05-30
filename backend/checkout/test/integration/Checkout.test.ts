@@ -173,7 +173,6 @@ test("Deve criar um pedido com 1 produto em dólar usando stub", async function(
 });
 
 test("Deve criar um pedido com 3 produtos com cupom de desconto com spy", async function(){
-    const spyProductRepository = sinon.spy(ProductRepositoryDatabase.prototype, "getProduct");
     const spyCouponRepository = sinon.spy(CouponRepositoryDatabase.prototype, "getCoupon");
     const input = {
         cpf: "407.302.170-27",
@@ -188,9 +187,7 @@ test("Deve criar um pedido com 3 produtos com cupom de desconto com spy", async 
     expect(output.total).toBe(4872);
     expect(spyCouponRepository.calledOnce).toBeTruthy();
     expect(spyCouponRepository.calledWith("VALE20")).toBeTruthy();
-    expect(spyProductRepository.calledThrice).toBeTruthy();
     spyCouponRepository.restore();
-    spyProductRepository.restore();
 });
 
 test("Deve criar um pedido com 1 produto em dólar usando mock", async function(){

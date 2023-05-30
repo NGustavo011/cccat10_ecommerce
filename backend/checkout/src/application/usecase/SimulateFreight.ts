@@ -1,24 +1,27 @@
-import FreightCalculator from '../../domain/entity/FreightCalculator';
+
 import ProductRepository from '../repository/ProductRepository';
 import ProductRepositoryDatabase from '../../infra/repository/ProductRepositoryDatabase';
-
-export default class SimulateFreight{
+import FreightGateway, {Input as FreightInput} from '../gateway/FreightGateway';
+import FreightGatewayHttp from '../../infra/gateway/FreightGatewayHttp';
+import AxiosAdapater from '../../infra/http/AxiosAdapter';export default class SimulateFreight{
 
     constructor (
         readonly productRepository: ProductRepository,
+        readonly freightGateway: FreightGateway = new FreightGatewayHttp(new AxiosAdapater())
     ){}
 
     async execute(input: Input): Promise<Output>{
         const output: Output = {
             freight: 0,
         };
+        const freightInput: FreightInput = { items: []};
         if (input.items){
             for(const item of input.items){
                 const product = await this.productRepository.getProduct(item.idProduct);
-                if(product.width <= 0 || product.height <= 0 || product.length <= 0 || product.weight <= 0)
-                    throw new Error("Invalid dimension");
-                output.freight += FreightCalculator.calculate(product, item.quantity);
+                freightInput.items.push({ width: product.width, height: product.height, length: product.length, weight: product.weight, quantity: item.quantity});
             }
+            const freightOutput = await this.freightGateway.calculateFreight(freightInput);
+            output.freight = freightOutput.freight;
         }
         return output
     }
