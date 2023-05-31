@@ -29,10 +29,9 @@ export default class Checkout{
         currencyTable.addCurrency("USD", currencies.usd);
         const sequence = await this.orderRepository.count();
         const order = new Order(input.uuid, input.cpf, currencyTable, sequence, new Date());
-        const freightInput: FreightInput = { items: []};
+        const freightInput: FreightInput = { items: [], from: input.from, to: input.to};
         if (input.items){
             for(const item of input.items){
-                // const product = await this.productRepository.getProduct(item.idProduct);
                 const product = await this.catalogGateway.getProduct(item.idProduct);
                 order.addItem(product, item.quantity);
                 freightInput.items.push({ width: product.width, height: product.height, length: product.length, weight: product.weight, quantity: item.quantity});
