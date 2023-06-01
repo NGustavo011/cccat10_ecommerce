@@ -1,9 +1,7 @@
 import CouponRepository from '../repository/CouponRepository';
 import CurrencyGateway from '../gateway/CurrencyGateway';
-import CurrencyGatewayHttp from '../../infra/gateway/CurrencyGatewayHttp';
 import OrderRepository from '../repository/OrderRepository';
 import ProductRepository from '../repository/ProductRepository';
-
 import CurrencyTable from '../../domain/entity/CurrencyTable';
 import Order from '../../domain/entity/Order';
 import FreightGateway, {Input as FreightInput} from '../gateway/FreightGateway';
@@ -11,9 +9,9 @@ import FreightGatewayHttp from '../../infra/gateway/FreightGatewayHttp';
 import AxiosAdapater from '../../infra/http/AxiosAdapter';
 import CatalogGateway from '../gateway/CatalogGateway';
 import CatalogGatewayHttp from '../../infra/gateway/CatalogGatewayHttp';
-import AuthGateway from '../gateway/AuthGateway';
-import AuthGatewayHttp from '../../infra/gateway/AuthGatewayHttp';
 import Usecase from './Usecase';
+import StockGateway from '../gateway/StockGateway';
+import StockGatewayHttp from '../../infra/gateway/StockGatewayHttp';
 
 export default class Checkout implements Usecase {
 
@@ -24,18 +22,10 @@ export default class Checkout implements Usecase {
         readonly orderRepository: OrderRepository,
         readonly freightGateway: FreightGateway = new FreightGatewayHttp(new AxiosAdapater()),
         readonly catalogGateway: CatalogGateway = new CatalogGatewayHttp(new AxiosAdapater()),
+        readonly stockGateway: StockGateway = new StockGatewayHttp(new AxiosAdapater())
     ){}
 
     async execute(input: Input): Promise<Output>{
-        // if(input.token){
-        //     try{
-        //         const payload = await this.authGateway.verify(input.token);
-        //     } catch(error){
-        //         if(error instanceof Error)
-        //             throw new Error("Authentication error");
-        //     }
-            
-        // }
         const currencies = await this.currencyGateway.getCurrencies(); 
         const currencyTable = new CurrencyTable();
         currencyTable.addCurrency("USD", currencies.usd);
@@ -59,6 +49,7 @@ export default class Checkout implements Usecase {
         }
         let total = order.getTotal();
         await this.orderRepository.save(order);
+        this.stockGateway.decrementStock(input);
         return {
             total, freight
         }
